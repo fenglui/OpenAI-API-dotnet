@@ -59,16 +59,18 @@ namespace OpenAI_API
 			{
 				throw new AuthenticationException("You must provide API authentication.  Please refer to https://github.com/OkGoDoIt/OpenAI-API-dotnet#authentication for details.");
 			}
-
-			/*
-			if (_Api.SharedHttpClient==null)
+	
+			HttpClient client;
+			var clientFactory = _Api.HttpClientFactory;
+			if (clientFactory != null)
 			{
-				_Api.SharedHttpClient = new HttpClient();
-				_Api.SharedHttpClient.
+				client = clientFactory.CreateClient();
 			}
-			*/
+			else
+			{
+				client = new HttpClient();
+			}
 
-			HttpClient client = new HttpClient();
 			client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _Api.Auth.ApiKey);
 			// Further authentication-header used for Azure openAI service
 			client.DefaultRequestHeaders.Add("api-key", _Api.Auth.ApiKey);
@@ -112,10 +114,12 @@ namespace OpenAI_API
 			using var client = GetClient();
 
 			HttpResponseMessage response = null;
-			string resultAsString = null;
-			HttpRequestMessage req = new HttpRequestMessage(verb, url);
 
-			if (postData != null)
+            string resultAsString = null;
+			HttpRequestMessage req = new HttpRequestMessage(verb, url);
+			//req.Version = new Version(2, 0);
+
+            if (postData != null)
 			{
 				if (postData is HttpContent)
 				{
@@ -128,7 +132,8 @@ namespace OpenAI_API
 					req.Content = stringContent;
 				}
 			}
-			response = await client.SendAsync(req, streaming ? HttpCompletionOption.ResponseHeadersRead : HttpCompletionOption.ResponseContentRead);
+			client.Timeout = TimeSpan.FromSeconds(30);
+            response = await client.SendAsync(req, streaming ? HttpCompletionOption.ResponseHeadersRead : HttpCompletionOption.ResponseContentRead);
 
 			if (response.IsSuccessStatusCode)
 			{
@@ -369,12 +374,17 @@ namespace OpenAI_API
 				{
 					resultAsString += line + Environment.NewLine;
 
-					if (line.StartsWith("data: "))
-						line = line.Substring("data: ".Length);
+					if (line.StartsWith("data:"))
+						line = line.Substring("data:".Length);
+
+					line = line.TrimStart();
+
 					if (line == "[DONE]")
 					{
 						yield break;
 					}
+					else if (line.StartsWith(":"))
+					{ }
 					else if (!string.IsNullOrWhiteSpace(line))
 					{
 						var res = JsonConvert.DeserializeObject<T>(line);

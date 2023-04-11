@@ -133,6 +133,37 @@ namespace OpenAI_API.Models
 		/// </summary>
 		public static Model AdaTextEmbedding => new Model("text-embedding-ada-002") { OwnedBy = "openai" };
 
+		/// <summary>
+		/// Most capable GPT-3.5 model and optimized for chat at 1/10th the cost of text-davinci-003. Will be updated with the latest model iteration.
+		/// </summary>
+		public static Model ChatGPTTurbo => new Model("gpt-3.5-turbo") { OwnedBy = "openai" };
+
+		/// <summary>
+		/// Snapshot of gpt-3.5-turbo from March 1st 2023. Unlike gpt-3.5-turbo, this model will not receive updates, and will only be supported for a three month period ending on June 1st 2023.
+		/// </summary>
+		public static Model ChatGPTTurbo0301 => new Model("gpt-3.5-turbo-0301") { OwnedBy = "openai" };
+
+		/// <summary>
+		/// More capable than any GPT-3.5 model, able to do more complex tasks, and optimized for chat. Will be updated with the latest model iteration.  Currently in limited beta so your OpenAI account needs to be whitelisted to use this.
+		/// </summary>
+		public static Model GPT4 => new Model("gpt-4") { OwnedBy = "openai" };
+
+		/// <summary>
+		/// Same capabilities as the base gpt-4 mode but with 4x the context length. Will be updated with the latest model iteration.  Currently in limited beta so your OpenAI account needs to be whitelisted to use this.
+		/// </summary>
+		public static Model GPT4_32k_Context => new Model("gpt-4-32k") { OwnedBy = "openai" };
+
+		/// <summary>
+		/// Stable text moderation model that may provide lower accuracy compared to TextModerationLatest.
+		/// OpenAI states they will provide advanced notice before updating this model.
+		/// </summary>
+		public static Model TextModerationStable => new Model("text-moderation-stable") { OwnedBy = "openai" };
+
+		/// <summary>
+		/// The latest text moderation model. This model will be automatically upgraded over time.
+		/// </summary>
+		public static Model TextModerationLatest => new Model("text-moderation-latest") { OwnedBy = "openai" };
+
 
 		/// <summary>
 		/// Gets more details about this Model from the API, specifically properties such as <see cref="OwnedBy"/> and permissions.
